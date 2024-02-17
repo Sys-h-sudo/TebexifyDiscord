@@ -33,7 +33,7 @@ var status = 0;
 if (fs.existsSync('./langs/' + language + '.json')) {
   console.log(`${colors.cyan(`language loaded: ${language}`)}`);
   conf = require('./langs/' + language + '.json');
-} else { autoTranslate(require('./langs/#####.json'), language); status = 1; } //replace #####.json with your prefered language file. See /langs/{...}
+} else { autoTranslate(require('./lang/english.json'), language); status = 1; } //replace english.json with your prefered language file. See /lang/{...}
 
 
 const {

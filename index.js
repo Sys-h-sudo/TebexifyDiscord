@@ -38,7 +38,7 @@ if (fs.existsSync('./langs/' + language + '.json')) {
 
 const {
   Client,
-  Events,
+  Events, // might not be needed
   GatewayIntentBits,
   EmbedBuilder,
 } = require("discord.js");

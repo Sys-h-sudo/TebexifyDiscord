@@ -6,7 +6,7 @@ const type_req = require('./handlers/type_request.js');
 const validfrom = require('./handlers/from.js');
 const { autoTranslate } = require('./functions/translate.js');
 const { createFeatures } = require('./functions/create_features.js');
-//// LOGS SYSTEM ////
+// logger
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
@@ -18,15 +18,13 @@ const logger = winston.createLogger({
     new winston.transports.Console()
   ]
 });
-//// STADISTICS FUNCTIONS /////
+
 if (embed.useMCskin === undefined) createFeatures();
-///////////////////////////////
-//   Embed Configurations    //
 var emojititle = embed.emojititle; var emojireact = embed.emojireact;
 var emojicurrency = embed.emojicurrency; var gifurl = embed.gifurl;
 var url = embed.url; var url_infooter = embed.url_infooter;
 var color = embed.color; var emojiproductArrow = embed.emojiproductArrow;
-///////////////////////////////
+
 var conf;
 const ll = require('./lib/check.js');
 ll.cc(debug, defPort, emojititle, emojireact, emojicurrency, token, shopchannelID, language, gifurl, url, url_infooter);
@@ -35,11 +33,9 @@ var status = 0;
 if (fs.existsSync('./langs/' + language + '.json')) {
   console.log(`${colors.cyan(`language loaded: ${language}`)}`);
   conf = require('./langs/' + language + '.json');
-} else { autoTranslate(require('./langs/spanish.json'), language); status = 1; }
+} else { autoTranslate(require('./langs/#####.json'), language); status = 1; } //replace #####.json with your prefered language file. See /langs/{...}
 
-///////////////////////////////
-// Defined Discord Functions //
-///////////////////////////////
+
 const {
   Client,
   Events,
@@ -54,9 +50,8 @@ const client = new Client({
     GatewayIntentBits.GuildMembers,
   ],
 });
-///////////////////////////////
-//          Debug mode       
-// shopchannelID2 is for testings or debugs
+
+
 if (debug == true) {
   console.log(colors.gray('Debug mode is enabled!'));
   client.on('messageCreate', message => {
@@ -64,14 +59,14 @@ if (debug == true) {
     console.log(`${message.author.username}: ${message.content}`)
   });
 }
-///////////////////////////////
 
-/////////EMBED///////////
+
+// embed const
 const { sendWH } = require('./functions/sendWH.js');
 //const { setInterval } = require('timers/promises');
-////////////////////////
 
-////////PROCESS///////////
+
+// cord
 client.on('ready', () => {
   console.log(colors.yellow('2. Started... '));
   console.log(colors.green(`3. Logged in as ${client.user.tag}!`));
@@ -81,20 +76,19 @@ client.on('ready', () => {
   app.use(express.json(), type_req, validfrom);
   app.use(express.urlencoded({ extended: true }));
 
-  app.post('/tebex/webhook', async function (req, res) {
+  app.post('/tebex/webhook', async function (req, res) { // process request change post('/') to match your values.
     try {
-      // Process the request
       const products = req.body.subject.products;
       const temp = products.map((product) => `${emojiproductArrow}${product.name} **x${product.quantity}** **|** $${product.paid_price.amount.toFixed(2)}`).join('\n');
       const totalPrice = `${req.body.subject.price.amount.toFixed(2)} **${req.body.subject.price.currency}** ${emojicurrency}`;
       const channel = client.channels.cache.get(shopchannelID);
       if (debug == true) console.log(`${conf.messages.getchannel} ${channel}`);
-      // Send message with function
       var name = req.body.subject.customer.username.username;
       var prodl = products.length;
       if (!useMCskin) gifurl = 'https://mc-heads.net/avatar/' + name;
       await sendWH(prodl, name, temp, totalPrice, channel, url, url_infooter, color, emojititle, emojireact, gifurl, conf, EmbedBuilder);
-      // Send response to the request
+
+// status 200 response tebexify -> Tebex
       res.status(200).json(req.body);
     } catch (err) {
       console.log(colors.red(`ERROR: ${err}`));
@@ -104,6 +98,6 @@ client.on('ready', () => {
 
   app.listen(port);
   console.log(`${colors.yellow('5. Running on ')} ${colors.green('server port ' + port)}`);
-  logger.info('App its works.');
+  logger.info('App has started - Awaiting Payloads');
 });
-if (status == 0) { client.login(token); } else { console.log(colors.red('ENGINE: The discord bot and web server will not start because the integration language is being processed.')); }
+if (status == 0) { client.login(token); } else { console.log(colors.red('Reconfiguring language files, Tebexify is initiating an automatic reboot.')); }
